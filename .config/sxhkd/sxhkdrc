@@ -1,0 +1,194 @@
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + t
+	kitty
+
+# program launcher
+super + a
+	rofi -show drun -config ~/.config/rofi/config.rasi
+
+# sxhkd_help
+super + h
+	~/.config/bspwm/scripts/sxhkd_help
+
+# firefox
+super + r
+	firefox
+
+# file manager
+super + e
+	thunar
+
+# steam
+super + s
+	steam-runtime
+
+# discord
+super + d
+	vesktop
+
+# music
+super + c
+	firefox https://beta.music.apple.com
+
+# btop
+ctrl + shift + Escape
+	kitty btop
+
+# make sxhkd reload its configuration files:
+super + Escape
+	pkill -USR1 -x sxhkd
+
+#
+# Screenshot
+#
+
+# screenshot screen
+super + p
+	~/.config/bspwm/scripts/screenshot.sh p
+
+# screenshot selection
+super + o
+	~/.config/bspwm/scripts/screenshot.sh s
+
+#
+# Wallpaper
+#
+
+# cycle wallpaper forwards
+super + Right
+	~/.config/bspwm/scripts/wallpaper.sh f
+
+# cycle wallpaper backwards
+super + Left
+	~/.config/bspwm/scripts/wallpaper.sh b
+
+#
+# Polybar
+#
+
+# cycle polybar forwards
+super + Up
+	~/.config/bspwm/scripts/polybar.sh f
+
+# cycle polybar backwards
+super + Down
+	~/.config/bspwm/scripts/polybar.sh b
+
+#
+# Audio
+#
+XF86AudioMute
+	~/.config/bspwm/scripts/volumecontrol.sh -o m
+
+XF86AudioRaiseVolume
+	~/.config/bspwm/scripts/volumecontrol.sh -o i
+
+XF86AudioLowerVolume
+	~/.config/bspwm/scripts/volumecontrol.sh -o d
+
+XF86AudioPlay
+	playerctl play-pause
+
+XF86AudioPause
+	playerctl play-pause
+
+XF86AudioNext
+	playerctl next
+
+XF86AudioPrev
+	playerctl previous
+
+#
+# bspwm hotkeys
+#
+
+# quit/restart bspwm
+super + alt + {q,r}
+ 	bspc {quit,wm -r}
+
+# close and kill
+super + {_,shift + }q
+	bspc node {-c,-k}
+
+# alternate between the tiled and monocle layout
+super + x
+	bspc desktop -l next
+
+# toggle compositor on/off
+super + g
+	~/.config/bspwm/scripts/compfytoggle.sh
+
+# toggle polybar on/off
+super + v
+	~/.config/bspwm/scripts/polybar.sh t
+
+#
+# state/flags
+#
+
+# set the window state
+super + w
+	bspc node -t {floating,tiled}
+
+super + f
+	bspc node -t {fullscreen,tiled}
+
+#
+# focus/swap
+#
+
+# focus the next/previous window in the current desktop
+super + {_,shift + }z
+	bspc node -f {next,prev}.local.!hidden.window
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
+
+# focus the last node/desktop
+alt + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# focus or send to the given desktop
+super + {_,alt + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+#
+# preselect
+#
+
+# preselect the direction
+super + {j,k,i,l}
+	bspc node -p {west,south,north,east}
+
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# move/resize
+#
+
+# expand a window by moving one of its side outward
+super + shift + {j,k,i,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# contract a window by moving one of its side inward
+super + alt + {j,k,i,l}
+	bspc node -z {left 20 0,bottom 0 -20,top 0 20,right -20 0}
+
+# move a floating window
+super + ctrl + {j,k,i,l}
+	bspc node -v {-20 0,0 20,0 -20,20 0}

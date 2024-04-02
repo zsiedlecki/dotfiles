@@ -1,0 +1,2 @@
+#!/bin/sh
+feh --no-fehbg --bg-scale '/home/arch/.wallpapers/nord/dune_1.png' 

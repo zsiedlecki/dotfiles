@@ -1,0 +1,35 @@
+#! /bin/sh
+
+
+xrandr --output DP-0 --primary --mode 2560x1440 --rate 165 &
+bspc monitor DP-0 -d 一 二 三 四 五 六 七 八 九 十
+
+if [[ $(xrandr -q | grep "HDMI-0 connected") ]];
+  then
+    xrandr --output HDMI-0 --same-as DP-0 --scale 1.3333x1.3333
+    bspc monitor HDMI-0 -d
+fi
+
+bspc config border_width          2
+bspc config window_gap            14
+bspc config split_ratio           0.5
+
+bspc config borderless_monocle    false
+bspc config gapless_monocle       false
+bspc config focus_follows_pointer true
+
+# Autostart applications
+pgrep -x sxhkd > /dev/null || sxhkd &
+pgrep -x compfy > /dev/null || compfy --unredir-if-possible -b &
+pgrep -x lxpolkit > /dev/null || lxpolkit &
+~/.config/bspwm/scripts/polybar.sh r &
+xsetroot -cursor_name left_ptr &
+xsettingsd &
+~/.fehbg &
+# Set theme
+sh ~/.config/bspwm/colors.sh &
+# Load .nvidia-settings-rc
+nvidia-settings --load-config-only &
+# Wait for NZXT controller to load before starting openrgb
+pgrep -x openrgb > /dev/null || (sleep 4 && openrgb --startminimized) &
+

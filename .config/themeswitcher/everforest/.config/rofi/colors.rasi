@@ -1,0 +1,6 @@
+*{
+        accent: #d3c6aa;
+	foreground: #d3c6aa;
+	background: #2b3339;	
+	background-alt: #464e53;
+}
