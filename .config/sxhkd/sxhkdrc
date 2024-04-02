@@ -42,17 +42,17 @@ ctrl + shift + Escape
 super + Escape
 	pkill -USR1 -x sxhkd
 
-#
-# Screenshot
+# 
+# Theme
 #
 
-# screenshot screen
-super + p
-	~/.config/bspwm/scripts/screenshot.sh p
+# cycle theme forwards
+super + alt + Right
+	~/.config/bspwm/scripts/themeswitcher.sh f
 
-# screenshot selection
-super + o
-	~/.config/bspwm/scripts/screenshot.sh s
+# cycle theme backwards
+super + alt + Left
+	~/.config/bspwm/scripts/themeswitcher.sh b
 
 #
 # Wallpaper
@@ -101,6 +101,18 @@ XF86AudioNext
 
 XF86AudioPrev
 	playerctl previous
+
+#
+# Screenshot
+#
+
+# screenshot screen
+super + p
+	~/.config/bspwm/scripts/screenshot.sh p
+
+# screenshot selection
+super + o
+	~/.config/bspwm/scripts/screenshot.sh s
 
 #
 # bspwm hotkeys

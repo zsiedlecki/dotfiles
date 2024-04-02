@@ -1,4 +1,4 @@
 #!/bin/sh
-currenttheme="gruvbox-dark"
+themename="gruvbox-dark"
 currentwall="1"
 currentbar="1"

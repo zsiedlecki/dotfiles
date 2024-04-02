@@ -1,7 +1,7 @@
 #!/bin/sh
 
 source ~/.config/bspwm/scripts/control.sh
-totalwalls="$(ls -1 ~/.wallpapers/$currenttheme/ | wc -l)"
+totalwalls="$(ls -1 ~/.wallpapers/$themename/ | wc -l)"
 
 function print_error
 {
@@ -11,14 +11,15 @@ actions:
     f : cycle wallpaper forwards
     b : cycle wallpaper backwards
 EOF
+exit
 }
 
 function update
 {
     selection="$(echo "$currentwall" | ~/.config/bspwm/scripts/wallselect.sh)"
     sed -i "s/^currentwall=.*/currentwall=\"$currentwall\"/" ~/.config/bspwm/scripts/control.sh
-    feh --bg-scale $selection ; cp -a ~/.fehbg ~/.config/themeswitcher/$currenttheme/.fehbg &
-    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$currenttheme/.config/bspwm/scripts/control.sh &
+    feh --bg-scale $selection ; cp -a ~/.fehbg ~/.config/themeswitcher/$themename/.fehbg &
+    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
 }
 
 case $1 in

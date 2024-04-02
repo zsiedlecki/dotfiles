@@ -13,20 +13,21 @@ actions:
     f : cycle polybar forwards
     b : cycle polybar backwards
 EOF
+exit
 }
 
 function update
 {
     selection="$(echo "$currentbar" | ~/.config/bspwm/scripts/barselect.sh)"
     sed -i "s/^currentbar=.*/currentbar=\"$currentbar\"/" ~/.config/bspwm/scripts/control.sh
-    cp -a $selection ~/.config/polybar/config.ini ; cp -a $selection ~/.config/themeswitcher/$currenttheme/.config/polybar/config.ini &
-    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$currenttheme/.config/bspwm/scripts/control.sh &
+    cp -a $selection ~/.config/polybar/config.ini ; cp -a $selection ~/.config/themeswitcher/$themename/.config/polybar/config.ini &
+    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
     if [ "$(awk '/^bottom/{print $NF}' ~/.config/polybar/config.ini)" = true ] ; then
 	sed -i "s/origin =.*/origin = top-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$currenttheme/.config/dunst/dunstrc &
+	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     else
 	sed -i "s/origin =.*/origin = bottom-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$currenttheme/.config/dunst/dunstrc &
+	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     fi
 }
 

@@ -1,4 +1,4 @@
 #!/bin/sh
-currenttheme="nord"
+themename="nord"
 currentwall="1"
 currentbar="1"

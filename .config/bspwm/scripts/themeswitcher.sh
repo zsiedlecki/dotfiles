@@ -1,29 +1,64 @@
 #!/bin/sh
 
+source ~/.config/bspwm/scripts/themecontrol.sh
+dir=~/.config/themeswitcher
+totalthemes="$(ls -1 $dir/ | wc -l)"
+
 function print_error
 {
 cat << "EOF"
-./theme_switcher.sh <theme>
+./themeswitcher.sh <action/theme>
+actions:
+    f : cycle theme forwards
+    b : cycle theme backwards
 themes:
-    catpuccin
     everforest
     gruvbox-dark
     gruvbox-light
     nord
 EOF
+exit
 }
 
-dir=~/.config/themeswitcher
-theme="$1"
-if [ -d $dir/$theme ]; then
-    # Notify
-    sleep 0.2 && dunstify "t1" -a " $theme" -i "~/.config/dunst/icons/hyprdots.png" -r 91192 -t 2000 &
-    # Change theme files 
-    cp -a $dir/$theme/.config $dir/$theme/.icons $dir/$theme/.xsettingsd $dir/$theme/.fehbg ~/ &
-    kitten themes --reload-in=all $theme &
-    # Restart programs
-    killall compfy ; killall dunst ; bspc wm -r 
-else # invalid option
-    print_error
-fi
+function update
+{
+    selection="$(echo "$currenttheme" | ~/.config/bspwm/scripts/themeselect.sh)"
+    sed -i "s/^currenttheme=.*/currenttheme=\"$currenttheme\"/" ~/.config/bspwm/scripts/themecontrol.sh
+    cp -a $selection/.config $selection/.icons $selection/.xsettingsd $selection/.fehbg ~/
+    source ~/.config/bspwm/scripts/control.sh
+    kitten themes --reload-in=all $themename &
+    sed -i "s/theme =.*/theme = \"$themename\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
+    killall compfy ; killall dunst ; bspc wm -r
+}
 
+case $1 in
+f) # cycle forwards
+    echo "starting theme $currenttheme"
+    currenttheme=$((currenttheme+1))
+    if [ "$currenttheme" -gt "$totalthemes" ] ; then
+        currenttheme="1"
+    fi
+    echo "now: $currenttheme"
+    update $currenttheme ;;
+b) # cycle backwards
+    echo "starting theme $currenttheme"
+    currenttheme=$((currenttheme-1))
+    if [ "$currenttheme" -lt 1 ] ; then
+        currenttheme="$totalthemes"
+    fi
+    echo "now: $currenttheme"
+    update $currenttheme ;;
+*) # update to selected theme / invalid option
+    if [ -d $dir/$1 ]; then
+        # Change theme files 
+        cp -a $dir/$1/.config $dir/$1/.icons $dir/$1/.xsettingsd $dir/$1/.fehbg ~/ &
+        kitten themes --reload-in=all $1 &
+        sed -i "s/theme =.*/theme = \"$1\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
+        # Restart programs
+        killall compfy ; killall dunst ; bspc wm -r 
+    else # invalid option
+        print_error
+    fi
+esac
+
+sleep 0.1 && dunstify "t1" -a "  $themename $currenttheme/$totalthemes" -i "~/.config/dunst/icons/hyprdots.png" -r 91192 -t 2000
