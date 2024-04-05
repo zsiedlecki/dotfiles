@@ -1,8 +1,9 @@
 #!/bin/sh
 
-source ~/.config/bspwm/scripts/themecontrol.sh
-dir=~/.config/themeswitcher
+source $HOME/.config/bspwm/scripts/themecontrol.sh
+dir=$HOME/.config/themeswitcher/
 totalthemes="$(ls -1 $dir/ | wc -l)"
+list=( `ls -w1 $dir` )
 
 function print_error
 {
@@ -22,43 +23,31 @@ exit
 
 function update
 {
-    selection="$(echo "$currenttheme" | ~/.config/bspwm/scripts/themeselect.sh)"
-    sed -i "s/^currenttheme=.*/currenttheme=\"$currenttheme\"/" ~/.config/bspwm/scripts/themecontrol.sh
-    cp -a $selection/.config $selection/.icons $selection/.xsettingsd $selection/.fehbg ~/
-    source ~/.config/bspwm/scripts/control.sh
+    selection="$dir/${list[$currenttheme]}"
+    sed -i "s/^currenttheme=.*/currenttheme=\"$currenttheme\"/" $HOME/.config/bspwm/scripts/themecontrol.sh
+    cp -a $selection/.config $selection/.icons $selection/.xsettingsd $selection/.fehbg $HOME/ ;
+    source $HOME/.config/bspwm/scripts/control.sh ;
+    bspc wm -r &
+    killall dunst &
     kitten themes --reload-in=all $themename &
-    sed -i "s/theme =.*/theme = \"$themename\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
-    killall dunst ; bspc wm -r
+    sed -i "s/theme =.*/theme = \"$themename\"/" $HOME/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" $HOME/.config/nvim/lua/chadrc.lua &
 }
 
 case $1 in
-f) # cycle forwards
-    echo "starting theme $currenttheme"
+f) # cycle theme forwards
     currenttheme=$((currenttheme+1))
-    if [ "$currenttheme" -gt "$totalthemes" ] ; then
-        currenttheme="1"
+    if [ "$currenttheme" -ge "$totalthemes" ] ; then
+        currenttheme="0"
     fi
-    echo "now: $currenttheme"
     update $currenttheme ;;
-b) # cycle backwards
-    echo "starting theme $currenttheme"
+b) # cycle theme backwards
     currenttheme=$((currenttheme-1))
-    if [ "$currenttheme" -lt 1 ] ; then
-        currenttheme="$totalthemes"
+    if [ "$currenttheme" -lt 0 ] ; then
+      currenttheme="$((totalthemes-1))"
     fi
-    echo "now: $currenttheme"
     update $currenttheme ;;
-*) # update to selected theme / invalid option
-    if [ -d $dir/$1 ]; then
-        # Change theme files 
-        cp -a $dir/$1/.config $dir/$1/.icons $dir/$1/.xsettingsd $dir/$1/.fehbg ~/ &
-        kitten themes --reload-in=all $1 &
-        sed -i "s/theme =.*/theme = \"$1\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
-        # Restart programs
-        killall dunst ; bspc wm -r 
-    else # invalid option
-        print_error
-    fi
+*) # invalid option
+    print_error ;;
 esac
 
-sleep 0.1 && dunstify "t1" -a "  $themename $currenttheme/$totalthemes" -i "~/.config/dunst/icons/hyprdots.png" -r 91192 -t 2000
+sleep 0.1 && dunstify "t1" -a "  $themename $((currenttheme+1))/$totalthemes" -i "~/.config/dunst/icons/hyprdots.png" -r 91192 -t 2000

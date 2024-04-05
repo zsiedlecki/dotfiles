@@ -1,3 +1,3 @@
 #!/bin/sh
-currenttheme="1"
+currenttheme="0"
 polybarenabled=true

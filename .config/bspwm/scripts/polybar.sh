@@ -1,8 +1,9 @@
 #!/bin/sh
 
-source ~/.config/bspwm/scripts/themecontrol.sh
-source ~/.config/bspwm/scripts/control.sh
-totalbars="$(ls -1 ~/.config/polybar/configs/ | wc -l)"
+source $HOME/.config/bspwm/scripts/themecontrol.sh
+source $HOME/.config/bspwm/scripts/control.sh
+totalbars="$(ls -1 $HOME/.config/polybar/configs/ | wc -l)"
+list=( `ls -w1 $HOME/.config/polybar/configs/` )
 
 function print_error
 {
@@ -19,27 +20,27 @@ exit
 
 function update
 {
-    selection="$(echo "$currentbar" | ~/.config/bspwm/scripts/barselect.sh)"
-    sed -i "s/^currentbar=.*/currentbar=\"$currentbar\"/" ~/.config/bspwm/scripts/control.sh
-    cp -a $selection ~/.config/polybar/config.ini ; cp -a $selection ~/.config/themeswitcher/$themename/.config/polybar/config.ini &
-    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
-    if [ "$(awk '/^bottom/{print $NF}' ~/.config/polybar/config.ini)" = true ] ; then
-	      sed -i "s/origin =.*/origin = top-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	      cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
+    selection="$HOME/.config/polybar/configs/${list[$currentbar]}"
+    sed -i "s/^currentbar=.*/currentbar=\"$currentbar\"/" $HOME/.config/bspwm/scripts/control.sh ;
+    cp -a $selection ~/.config/polybar/config.ini ; cp -a $selection $HOME/.config/themeswitcher/$themename/.config/polybar/config.ini &
+    cp -a $HOME/.config/bspwm/scripts/control.sh $HOME/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
+    if [ "$(awk '/^bottom/{print $NF}' $HOME/.config/polybar/config.ini)" = true ] ; then
+	      sed -i "s/origin =.*/origin = top-right/" $HOME/.config/dunst/dunstrc ; killall dunst ;
+	      cp -a $HOME/.config/dunst/dunstrc $HOME/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     else
-	      sed -i "s/origin =.*/origin = bottom-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	      cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
+	      sed -i "s/origin =.*/origin = bottom-right/" $HOME/.config/dunst/dunstrc ; killall dunst ;
+	      cp -a $HOME/.config/dunst/dunstrc $HOME/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     fi
 }
 
 function refresh
 {
     if pgrep -x polybar > /dev/null ; then
-        if [ "$(awk '/^bottom/{print $NF}' ~/.config/polybar/config.ini)" = true ] ; then
+        if [ "$(awk '/^bottom/{print $NF}' $HOME/.config/polybar/config.ini)" = true ] ; then
 	          bspc config top_padding 0 &
-	          bspc config bottom_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
+	          bspc config bottom_padding $(($(awk '/^height/{print $NF}' $HOME/.config/polybar/config.ini) + 2)) &
 	      else
-	          bspc config top_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
+	          bspc config top_padding $(($(awk '/^height/{print $NF}' $HOME/.config/polybar/config.ini) + 2)) &
 	          bspc config bottom_padding 0 &
 	      fi
     fi
@@ -58,33 +59,33 @@ r) # refresh polybar
     exit ;;
 t) # toggle polybar
     if pgrep -x polybar > /dev/null ; then
-        sed -i "s/polybarenabled=.*/polybarenabled=false/" ~/.config/bspwm/scripts/themecontrol.sh &
+        sed -i "s/polybarenabled=.*/polybarenabled=false/" $HOME/.config/bspwm/scripts/themecontrol.sh &
         bspc config top_padding 0 &
 	      bspc config bottom_padding 0 &
         killall polybar &
         notif=" Polybar disabled"
     else
-        sed -i "s/polybarenabled=.*/polybarenabled=true/" ~/.config/bspwm/scripts/themecontrol.sh &
+        sed -i "s/polybarenabled=.*/polybarenabled=true/" $HOME/.config/bspwm/scripts/themecontrol.sh &
         polybar -r &
 	      refresh &
         notif=" Polybar enabled"
     fi ;;
 f) # cycle forwards
     currentbar=$((currentbar+1))
-    if [ "$currentbar" -gt "$totalbars" ] ; then
-        currentbar="1"
+    if [ "$currentbar" -ge "$totalbars" ] ; then
+        currentbar="0"
     fi
-    update $currentbar ; refresh
-    notif="    Polybar $currentbar/$totalbars" ;;
+    update $currentbar ; refresh ;
+    notif="    Polybar $((currentbar+1))/$totalbars" ;;
 b) # cycle backwards
     currentbar=$((currentbar-1))
-    if [ "$currentbar" -lt 1 ] ; then    
-        currentbar="$totalbars"
+    if [ "$currentbar" -lt 0 ] ; then    
+      currentbar="$((totalbars-1))"
     fi
-    update $currentbar ; refresh
-    notif="    Polybar $currentbar/$totalbars" ;;
+    update $currentbar ; refresh ;
+    notif="    Polybar $((currentbar+1))/$totalbars" ;;
 *) # invalid option
     print_error ;;
 esac
 
-sleep 0.1 && dunstify "t1" -a "$notif" -i "~/.config/dunst/icons/hyprdots.png" -r 91194 -t 2000
+sleep 0.1 && dunstify "t1" -a "$notif" -i "$HOME/.config/dunst/icons/hyprdots.png" -r 91194 -t 2000

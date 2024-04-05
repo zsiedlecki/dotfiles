@@ -1,7 +1,8 @@
 #!/bin/sh
 
-source ~/.config/bspwm/scripts/control.sh
-totalwalls="$(ls -1 ~/.wallpapers/$themename/ | wc -l)"
+source $HOME/.config/bspwm/scripts/control.sh
+totalwalls="$(ls -1 $HOME/.wallpapers/$themename/ | wc -l)"
+list=( `ls -w1 $HOME/.wallpapers/$themename/` )
 
 function print_error
 {
@@ -16,27 +17,29 @@ exit
 
 function update
 {
-    selection="$(echo "$currentwall" | ~/.config/bspwm/scripts/wallselect.sh)"
-    sed -i "s/^currentwall=.*/currentwall=\"$currentwall\"/" ~/.config/bspwm/scripts/control.sh
-    feh --bg-scale $selection ; cp -a ~/.fehbg ~/.config/themeswitcher/$themename/.fehbg &
-    cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
+    old="$HOME/.wallpapers/$themename/${list[$previouswall]}"
+    new="$HOME/.wallpapers/$themename/${list[$currentwall]}"
+    dunstify "t1" -a "    Wallpaper $((currentwall+1))/$totalwalls" -i "$new" -r 91193 -t 2000 &
+    feh --bg-scale $new ; cp -a $HOME/.fehbg $HOME/.config/themeswitcher/$themename/.fehbg & 
+    sed -i "s/^currentwall=.*/currentwall=\"$currentwall\"/" $HOME/.config/bspwm/scripts/control.sh ;
+    cp -a $HOME/.config/bspwm/scripts/control.sh $HOME/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
 }
 
 case $1 in
-f) # cycle forwards
+f) # cycle wallpaper forwards
+    previouswall=$currentwall
     currentwall=$((currentwall+1))
-    if [ "$currentwall" -gt "$totalwalls" ] ; then
-	      currentwall="1"
+    if [ "$currentwall" -ge "$totalwalls" ] ; then
+	      currentwall="0"
     fi
-    update $currentwall ;;
-b) # cycle backwards
+    update $currentwall $previouswall;;
+b) # cycle wallpaper backwards
+    previouswall=$currentwall
     currentwall=$((currentwall-1))
-    if [ "$currentwall" -lt 1 ] ; then
-	      currentwall="$totalwalls"
+    if [ "$currentwall" -lt 0 ] ; then
+      currentwall="$((totalwalls-1))"
     fi
-    update $currentwall ;;
+    update $currentwall $previouswall;;
 *) # invalid option
     print_error ;;
 esac
-
-dunstify "t1" -a "    Wallpaper $currentwall/$totalwalls" -i "$selection" -r 91193 -t 2000
