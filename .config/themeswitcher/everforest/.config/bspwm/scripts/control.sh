@@ -1,4 +1,4 @@
 #!/bin/sh
 themename="everforest"
-currentwall="2"
+currentwall="9"
 currentbar="1"
