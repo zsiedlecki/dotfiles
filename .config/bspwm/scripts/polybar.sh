@@ -1,5 +1,6 @@
 #!/bin/sh
 
+source ~/.config/bspwm/scripts/themecontrol.sh
 source ~/.config/bspwm/scripts/control.sh
 totalbars="$(ls -1 ~/.config/polybar/configs/ | wc -l)"
 
@@ -23,11 +24,11 @@ function update
     cp -a $selection ~/.config/polybar/config.ini ; cp -a $selection ~/.config/themeswitcher/$themename/.config/polybar/config.ini &
     cp -a ~/.config/bspwm/scripts/control.sh ~/.config/themeswitcher/$themename/.config/bspwm/scripts/control.sh &
     if [ "$(awk '/^bottom/{print $NF}' ~/.config/polybar/config.ini)" = true ] ; then
-	sed -i "s/origin =.*/origin = top-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
+	      sed -i "s/origin =.*/origin = top-right/" ~/.config/dunst/dunstrc ; killall dunst ;
+	      cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     else
-	sed -i "s/origin =.*/origin = bottom-right/" ~/.config/dunst/dunstrc ; killall dunst ;
-	cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
+	      sed -i "s/origin =.*/origin = bottom-right/" ~/.config/dunst/dunstrc ; killall dunst ;
+	      cp -a ~/.config/dunst/dunstrc ~/.config/themeswitcher/$themename/.config/dunst/dunstrc &
     fi
 }
 
@@ -35,36 +36,37 @@ function refresh
 {
     if pgrep -x polybar > /dev/null ; then
         if [ "$(awk '/^bottom/{print $NF}' ~/.config/polybar/config.ini)" = true ] ; then
-	    echo "bar is on bottom"
-	    bspc config top_padding 0 &
-	    bspc config bottom_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
-	else
-	    echo "bar is on top"
-	    bspc config top_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
-	    bspc config bottom_padding 0 &
-	fi
+	          bspc config top_padding 0 &
+	          bspc config bottom_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
+	      else
+	          bspc config top_padding $(($(awk '/^height/{print $NF}' ~/.config/polybar/config.ini) + 2)) &
+	          bspc config bottom_padding 0 &
+	      fi
     fi
 }
 
 case $1 in
 r) # refresh polybar
-    if pgrep -x polybar > /dev/null ; then
-        refresh &
-	exit
-    else
-        polybar -r &
-	refresh &
-	exit
-    fi ;;
+    if [ "$polybarenabled" = true ] ; then
+        if pgrep -x polybar > /dev/null ; then
+            refresh &
+        else
+            polybar -r &
+	          refresh &
+        fi
+    fi
+    exit ;;
 t) # toggle polybar
     if pgrep -x polybar > /dev/null ; then
+        sed -i "s/polybarenabled=.*/polybarenabled=false/" ~/.config/bspwm/scripts/themecontrol.sh &
         bspc config top_padding 0 &
-	bspc config bottom_padding 0 &
+	      bspc config bottom_padding 0 &
         killall polybar &
         notif=" Polybar disabled"
     else
+        sed -i "s/polybarenabled=.*/polybarenabled=true/" ~/.config/bspwm/scripts/themecontrol.sh &
         polybar -r &
-	refresh &
+	      refresh &
         notif=" Polybar enabled"
     fi ;;
 f) # cycle forwards

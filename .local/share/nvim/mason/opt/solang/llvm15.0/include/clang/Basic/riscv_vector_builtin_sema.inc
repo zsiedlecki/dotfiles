@@ -1,1 +1,0 @@
-/home/arch/.local/share/nvim/mason/packages/solang-llvm/llvm15.0/include/clang/Basic/riscv_vector_builtin_sema.inc

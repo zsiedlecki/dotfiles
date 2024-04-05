@@ -26,13 +26,13 @@ case $1 in
 f) # cycle forwards
     currentwall=$((currentwall+1))
     if [ "$currentwall" -gt "$totalwalls" ] ; then
-	currentwall="1"
+	      currentwall="1"
     fi
     update $currentwall ;;
 b) # cycle backwards
     currentwall=$((currentwall-1))
     if [ "$currentwall" -lt 1 ] ; then
-	currentwall="$totalwalls"
+	      currentwall="$totalwalls"
     fi
     update $currentwall ;;
 *) # invalid option

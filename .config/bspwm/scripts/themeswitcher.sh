@@ -28,7 +28,7 @@ function update
     source ~/.config/bspwm/scripts/control.sh
     kitten themes --reload-in=all $themename &
     sed -i "s/theme =.*/theme = \"$themename\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
-    killall compfy ; killall dunst ; bspc wm -r
+    killall dunst ; bspc wm -r
 }
 
 case $1 in
