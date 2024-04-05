@@ -55,7 +55,7 @@ b) # cycle backwards
         kitten themes --reload-in=all $1 &
         sed -i "s/theme =.*/theme = \"$1\"/" ~/.config/nvim/lua/chadrc.lua ; nvim -c "| w" -c "qa" ~/.config/nvim/lua/chadrc.lua &
         # Restart programs
-        killall compfy ; killall dunst ; bspc wm -r 
+        killall dunst ; bspc wm -r 
     else # invalid option
         print_error
     fi
